@@ -1,4 +1,16 @@
-This is your new Play application
-=================================
+#Party Advisor - Event Queue Service
+### Travis CI - [![Build Status](https://travis-ci.org/Studio-Projektowe-AGH/PA_EventQueue.svg)](https://travis-ci.org/Studio-Projektowe-AGH/PA_EventQueue)
+======
+REST API: 
 
-This file will be packaged with your application, when using `activator dist`.
+POST        /events/checkin        
+
+POST        /events/checkout     
+
+POST        /events/location
+
+POST        /events/qrscan     
+
+POST        /events/rating       
+
+POST        /test/message    
