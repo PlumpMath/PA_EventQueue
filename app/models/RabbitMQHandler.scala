@@ -8,6 +8,7 @@ import play.Play
  */
 
 class RabbitMQHandler(exchangeName: String = "") {
+
   def publishMessage(routingKey: String, message: String) = {
     val sendingChannel  = RabbitMQHandler.connection.createChannel()
     sendingChannel.basicPublish(exchangeName, routingKey, null, message.getBytes)
@@ -31,6 +32,14 @@ object RabbitMQHandler {
         connection.close()
       }
     }
+  }
+
+  object RoutingKey {
+    val CHECKIN_EVENT = "checkin_event"
+    val CHECKOUT_EVENT = "checkout_event"
+    val RATING_EVENT = "rating_event"
+    val LOCATION_EVENT = "location_even"
+    val QRSCAN_EVENT = "qrscan_event"
   }
 }
 

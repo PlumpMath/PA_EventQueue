@@ -8,6 +8,9 @@ import play.api.mvc._
 import play.libs.Akka
 
 object Application extends Controller {
+
+  import RabbitMQHandler.RoutingKey._
+
   val rmq = new RabbitMQHandler
 
   def index = Action {
@@ -16,29 +19,73 @@ object Application extends Controller {
   }
 
   def handleCheckInEvent = Action { implicit request =>
-    val checkInEvent = checkinForm.bindFromRequest.get
-    Logger.debug(s"${checkInEvent}")
-    Ok("Got it!")
+    checkinForm.bindFromRequest.fold(
+      formWithError => {
+        Logger.error(s"CheckInForm with error.")
+        BadRequest("Invalid Json body.")
+      },
+      eventBody => {
+        rmq.publishMessage(CHECKIN_EVENT, eventBody.toString)
+        Logger.debug(s"${eventBody}")
+        Ok
+      }
+    )
   }
 
   def handleCheckOutEvent = Action { implicit request =>
-    val checkOutEvent = checkoutForm.bindFromRequest.get
-    Ok("Got it!")
+    checkoutForm.bindFromRequest.fold(
+      formWithError => {
+        Logger.error(s"CheckOutForm error.")
+        BadRequest("Invalid Json body.")
+      },
+      eventBody => {
+      rmq.publishMessage(CHECKOUT_EVENT, eventBody.toString)
+      Logger.debug(s"${eventBody}")
+      Ok
+      }
+    )
   }
 
   def handleLocationEvent = Action { implicit request =>
-    val locationEvent = locationForm.bindFromRequest.get
-    Ok("Got it!")
+    locationForm.bindFromRequest.fold(
+      formWithError => {
+        Logger.error(s"LocationForm error.")
+        BadRequest("Invalid Json body.")
+      },
+      eventBody => {
+        rmq.publishMessage(LOCATION_EVENT, eventBody.toString)
+        Logger.debug(s"${eventBody}")
+        Ok
+      }
+    )
   }
 
   def handleRatingEvent = Action { implicit request =>
-    val ratingEvent = ratingForm.bindFromRequest.get
-    Ok("Got it!")
+    ratingForm.bindFromRequest.fold(
+      formWithError => {
+        Logger.error(s"RatingForm error.")
+        BadRequest("Invalid Json body.")
+      },
+      eventBody => {
+        rmq.publishMessage(RATING_EVENT, eventBody.toString)
+        Logger.debug(s"${eventBody}")
+        Ok
+      }
+    )
   }
 
   def handleQrScanEvent = Action { implicit request =>
-    val qrscanEvent = qrScanForm.bindFromRequest.get
-    Ok("Got it!")
+    qrScanForm.bindFromRequest.fold(
+      formWithError => {
+        Logger.error(s"QRScanForm error.")
+        BadRequest("Invalid Json body.")
+      },
+      eventBody => {
+        rmq.publishMessage(QRSCAN_EVENT, eventBody.toString)
+        Logger.debug(s"${eventBody}")
+        Ok
+      }
+    )
   }
 
   def handleTestRequest = Action {
@@ -47,6 +94,7 @@ object Application extends Controller {
 
   var checkinForm = Form(
     mapping(
+      "userId"    -> optional(text),
       "timestamp" -> longNumber,
       "clubId"    -> text
     )(CheckInEvent.apply)(CheckInEvent.unapply)
@@ -54,6 +102,7 @@ object Application extends Controller {
 
   var checkoutForm = Form(
     mapping(
+      "userId"    -> optional(text),
       "timestamp" -> longNumber,
       "clubId"    -> nonEmptyText
     )(CheckOutEvent.apply)(CheckOutEvent.unapply)
@@ -61,6 +110,7 @@ object Application extends Controller {
 
   var locationForm = Form(
     mapping(
+      "userId"    -> optional(text),
       "timestamp" -> longNumber,
       "latitude"  -> nonEmptyText,
       "longitude" -> nonEmptyText
@@ -69,13 +119,16 @@ object Application extends Controller {
 
   var qrScanForm = Form(
     mapping(
+      "userId"    -> optional(text),
       "timestamp" ->  longNumber,
-      "clubId"    ->  nonEmptyText
+      "clubId"    ->  nonEmptyText,
+      "rating"    ->  nonEmptyText
     )(QrScanEvent.apply)(QrScanEvent.unapply)
   )
 
   var ratingForm = Form(
     mapping(
+      "userId"    -> optional(text),
       "timestamp" -> longNumber,
       "clubId"    -> nonEmptyText,
       "rating"    -> nonEmptyText
