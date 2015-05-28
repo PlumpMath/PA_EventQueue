@@ -1,4 +1,4 @@
-name := """play-scala"""
+name := """event-queue"""
 
 version := "1.0-SNAPSHOT"
 
