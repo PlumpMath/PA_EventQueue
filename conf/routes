@@ -6,6 +6,8 @@
 
 POST        /events/checkin         controllers.Application.handleCheckInEvent
 
+POST        /events/checkout         controllers.Application.handleCheckOutEvent
+
 POST        /events/location        controllers.Application.handleLocationEvent
 
 POST        /events/qrscan          controllers.Application.handleQrScanEvent
