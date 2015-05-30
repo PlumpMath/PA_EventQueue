@@ -16,9 +16,9 @@ object Message {
 
   case class CheckOutEvent(timestamp: Long, clubId: String)
 
-  case class LocationEvent(timestamp: Long, longitude: String, latitude: String)
+  case class LocationEvent(timestamp: Long, longitude: Double, latitude: Double)
 
-  case class RatingEvent(timestamp: Long, clubId: String, rating: String)
+  case class RatingEvent(timestamp: Long, clubId: String, rating: Int)
 
   case class QrScanEvent(timestamp: Long, clubId: String, payload: String)
 

@@ -45,59 +45,99 @@ object Application extends Controller {
   }
 
   def handleCheckOutEvent = Action(parse.json) { implicit request =>
-    Json.fromJson[CheckOutEvent](request.body).fold(
-      formWithError => {
-        Logger.error(s"CheckOutForm error.")
-        BadRequest("Invalid Json body.")
-      },
-      eventBody => {
-        rmq.publishMessage(CHECKOUT_EVENT, eventBody.toString)
-        Logger.debug(s"${eventBody}")
-        Ok
-      }
-    )
+    val requestToken = request.headers.get("Authorization").get
+
+    val jwtToken = requestToken.split(" ")(1)
+    if (tokenAuthentication.verifyToken(jwtToken)) {
+      request.body.validate[CheckOutEvent].fold(
+        invalidBody => {
+          Logger.error("CheckInForm with error.")
+          BadRequest("Invalid Json body.")
+        },
+        validBody => {
+          var extendedBody = Json.toJson(validBody).as[JsObject]
+          val userId = tokenAuthentication.getUserId(jwtToken)
+          extendedBody += ("userId", JsString(userId))
+          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          Logger.debug(s"${extendedBody.toString}")
+          Ok("Event enqueued.")
+        }
+      )
+    } else {
+      BadRequest("Invalid token.")
+    }
   }
 
   def handleLocationEvent = Action(parse.json) { implicit request =>
-    Json.fromJson[LocationEvent](request.body).fold(
-      formWithError => {
-        Logger.error(s"LocationForm error.")
-        BadRequest("Invalid Json body.")
-      },
-      eventBody => {
-        rmq.publishMessage(LOCATION_EVENT, eventBody.toString)
-        Logger.debug(s"${eventBody}")
-        Ok
-      }
-    )
+    val requestToken = request.headers.get("Authorization").get
+
+    val jwtToken = requestToken.split(" ")(1)
+    if (tokenAuthentication.verifyToken(jwtToken)) {
+      request.body.validate[LocationEvent].fold(
+        invalidBody => {
+          Logger.error("CheckInForm with error.")
+          BadRequest("Invalid Json body.")
+        },
+        validBody => {
+          var extendedBody = Json.toJson(validBody).as[JsObject]
+          val userId = tokenAuthentication.getUserId(jwtToken)
+          extendedBody += ("userId", JsString(userId))
+          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          Logger.debug(s"${extendedBody.toString}")
+          Ok("Event enqueued.")
+        }
+      )
+    } else {
+      BadRequest("Invalid token.")
+    }
   }
 
   def handleRatingEvent = Action(parse.json) { implicit request =>
-    Json.fromJson[RatingEvent](request.body).fold(
-      formWithError => {
-        Logger.error(s"RatingForm error.")
-        BadRequest("Invalid Json body.")
-      },
-      eventBody => {
-        rmq.publishMessage(RATING_EVENT, eventBody.toString)
-        Logger.debug(s"${eventBody}")
-        Ok
-      }
-    )
+    val requestToken = request.headers.get("Authorization").get
+
+    val jwtToken = requestToken.split(" ")(1)
+    if (tokenAuthentication.verifyToken(jwtToken)) {
+      request.body.validate[RatingEvent].fold(
+        invalidBody => {
+          Logger.error("CheckInForm with error.")
+          BadRequest("Invalid Json body.")
+        },
+        validBody => {
+          var extendedBody = Json.toJson(validBody).as[JsObject]
+          val userId = tokenAuthentication.getUserId(jwtToken)
+          extendedBody += ("userId", JsString(userId))
+          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          Logger.debug(s"${extendedBody.toString}")
+          Ok("Event enqueued.")
+        }
+      )
+    } else {
+      BadRequest("Invalid token.")
+    }
   }
 
   def handleQrScanEvent = Action(parse.json) { implicit request =>
-    Json.fromJson[QrScanEvent](request.body).fold(
-      formWithError => {
-        Logger.error(s"QRScanForm error.")
-        BadRequest("Invalid Json body.")
-      },
-      eventBody => {
-        rmq.publishMessage(QRSCAN_EVENT, eventBody.toString)
-        Logger.debug(s"${eventBody}")
-        Ok
-      }
-    )
+    val requestToken = request.headers.get("Authorization").get
+
+    val jwtToken = requestToken.split(" ")(1)
+    if (tokenAuthentication.verifyToken(jwtToken)) {
+      request.body.validate[QrScanEvent].fold(
+        invalidBody => {
+          Logger.error("CheckInForm with error.")
+          BadRequest("Invalid Json body.")
+        },
+        validBody => {
+          var extendedBody = Json.toJson(validBody).as[JsObject]
+          val userId = tokenAuthentication.getUserId(jwtToken)
+          extendedBody += ("userId", JsString(userId))
+          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          Logger.debug(s"${extendedBody.toString}")
+          Ok("Event enqueued.")
+        }
+      )
+    } else {
+      BadRequest("Invalid token.")
+    }
   }
 
   /*
@@ -128,14 +168,14 @@ object Application extends Controller {
   //LocationEvent
   implicit val locationEventReader: Reads[LocationEvent] = (
       (JsPath \ "timestamp").read[Long] and
-      (JsPath \ "latitude").read[String] and
-      (JsPath \ "longitude").read[String]
+      (JsPath \ "latitude").read[Double] and
+      (JsPath \ "longitude").read[Double]
     )(LocationEvent.apply _)
 
   implicit val locationEventWriter: Writes[LocationEvent] = (
       (JsPath \ "timestamp").write[Long] and
-      (JsPath \ "latitude").write[String] and
-      (JsPath \ "longitude").write[String]
+      (JsPath \ "latitude").write[Double] and
+      (JsPath \ "longitude").write[Double]
     )(unlift(LocationEvent.unapply))
 
   //QrScanEvent
@@ -155,12 +195,12 @@ object Application extends Controller {
   implicit val ratingEventReader: Reads[RatingEvent] = (
       (JsPath \ "timestamp").read[Long] and
       (JsPath \ "clubId").read[String] and
-      (JsPath \ "rating").read[String]
+      (JsPath \ "rating").read[Int]
     )(RatingEvent.apply _)
 
   implicit val ratingEventWriter: Writes[RatingEvent] = (
       (JsPath \ "timestamp").write[Long] and
       (JsPath \ "clubId").write[String] and
-      (JsPath \ "rating").write[String]
+      (JsPath \ "rating").write[Int]
     )(unlift(RatingEvent.unapply))
 }
