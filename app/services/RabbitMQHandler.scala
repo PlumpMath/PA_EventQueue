@@ -1,4 +1,4 @@
-package models
+package services
 
 import com.rabbitmq.client._
 import play.Play
