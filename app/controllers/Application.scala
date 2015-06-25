@@ -58,7 +58,7 @@ object Application extends Controller {
           var extendedBody = Json.toJson(validBody).as[JsObject]
           val userId = tokenAuthentication.getUserId(jwtToken)
           extendedBody += ("userId", JsString(userId))
-          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          rmq.publishMessage(CHECKOUT_EVENT, extendedBody.toString)
           Logger.debug(s"${extendedBody.toString}")
           Ok("Event enqueued.")
         }
@@ -82,7 +82,7 @@ object Application extends Controller {
           var extendedBody = Json.toJson(validBody).as[JsObject]
           val userId = tokenAuthentication.getUserId(jwtToken)
           extendedBody += ("userId", JsString(userId))
-          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          rmq.publishMessage(LOCATION_EVENT, extendedBody.toString)
           Logger.debug(s"${extendedBody.toString}")
           Ok("Event enqueued.")
         }
@@ -106,7 +106,7 @@ object Application extends Controller {
           var extendedBody = Json.toJson(validBody).as[JsObject]
           val userId = tokenAuthentication.getUserId(jwtToken)
           extendedBody += ("userId", JsString(userId))
-          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          rmq.publishMessage(RATING_EVENT, extendedBody.toString)
           Logger.debug(s"${extendedBody.toString}")
           Ok("Event enqueued.")
         }
@@ -130,7 +130,7 @@ object Application extends Controller {
           var extendedBody = Json.toJson(validBody).as[JsObject]
           val userId = tokenAuthentication.getUserId(jwtToken)
           extendedBody += ("userId", JsString(userId))
-          rmq.publishMessage(CHECKIN_EVENT, extendedBody.toString)
+          rmq.publishMessage(QRSCAN_EVENT, extendedBody.toString)
           Logger.debug(s"${extendedBody.toString}")
           Ok("Event enqueued.")
         }
