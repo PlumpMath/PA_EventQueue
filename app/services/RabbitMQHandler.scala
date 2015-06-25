@@ -7,7 +7,7 @@ import play.Play
  * Created by Wojtek on 17/05/15.
  */
 
-class RabbitMQHandler(exchangeName: String = "") {
+class RabbitMQHandler(exchangeName: String = "pa_event_ex") {
 
   def publishMessage(routingKey: String, message: String) = {
     val sendingChannel  = RabbitMQHandler.connection.createChannel()
