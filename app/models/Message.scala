@@ -20,6 +20,6 @@ object Message {
 
   case class RatingEvent(timestamp: Long, clubId: String, rating: Int)
 
-  case class QrScanEvent(timestamp: Long, payload: String)
+  case class QrScanEvent(timestamp: Long, clubId:String, payload: String)
 
 }

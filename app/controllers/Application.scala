@@ -181,11 +181,13 @@ object Application extends Controller {
   //QrScanEvent
   implicit val qrscanEventReader: Reads[QrScanEvent] = (
       (JsPath \ "timestamp").read[Long] and
+      (JsPath \ "clubId").read[String] and
       (JsPath \ "payload").read[String]
     )(QrScanEvent.apply _)
 
   implicit val qrscanEventWriter: Writes[QrScanEvent] = (
       (JsPath \ "timestamp").write[Long] and
+      (JsPath \ "clubId").read[String] and
       (JsPath \ "payload").write[String]
     )(unlift(QrScanEvent.unapply))
 
